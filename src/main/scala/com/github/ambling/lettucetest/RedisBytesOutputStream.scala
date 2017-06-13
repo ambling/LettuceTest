@@ -29,7 +29,7 @@ class RedisBytesOutputStream(
   override def write(b: Int): Unit = {
     val buf = ByteBuffer.allocate(4)
     buf.putInt(b)
-    buf.rewind()
+    buf.flip()
     buf.position(3)
     val future = asyncCommand.append(key, buf)
     futures += future
@@ -48,7 +48,7 @@ class RedisBytesOutputStream(
 
   override def flush(): Unit = {
     // TODO to be thread-safe
-    for (future <- futures) writed += future.get()
+    for (future <- futures) writed = future.get()
     futures.clear()
   }
 
