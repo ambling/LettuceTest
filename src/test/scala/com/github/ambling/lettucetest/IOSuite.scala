@@ -78,6 +78,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     channel.close()
     data.position(0)
     var retrieved = syncCommands.get(key)
+    retrieved.remaining() should equal(length)
     data.equals(retrieved) should equal(true)
 
     // 4000
@@ -92,6 +93,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     channel.close()
     data.position(0)
     retrieved = syncCommands.get(key)
+    retrieved.remaining() should equal(length)
     data.equals(retrieved) should equal(true)
 
     length = 4000
@@ -105,6 +107,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     channel.close()
     data.position(0)
     retrieved = syncCommands.get(key)
+    retrieved.remaining() should equal(length)
     data.equals(retrieved) should equal(true)
 
     length = 40000
@@ -118,6 +121,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     channel.close()
     data.position(0)
     retrieved = syncCommands.get(key)
+    retrieved.remaining() should equal(length)
     data.equals(retrieved) should equal(true)
 
     length = 400000
@@ -131,6 +135,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     channel.close()
     data.position(0)
     retrieved = syncCommands.get(key)
+    retrieved.remaining() should equal(length)
     data.equals(retrieved) should equal(true)
 
     length = 4000000
@@ -144,6 +149,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     channel.close()
     data.position(0)
     retrieved = syncCommands.get(key)
+    retrieved.remaining() should equal(length)
     data.equals(retrieved) should equal(true)
   }
 }
