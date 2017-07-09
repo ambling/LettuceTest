@@ -1,4 +1,4 @@
-package com.github.ambling.lettucetest
+package com.github.ambling.lettucetest.utils
 
 import java.io.{Closeable, OutputStream}
 import java.nio.ByteBuffer

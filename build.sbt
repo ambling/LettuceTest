@@ -10,7 +10,10 @@ resolvers += "mvnrepository" at "http://mvnrepository.com/artifact/"
 
 resolvers += "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
-resolvers += "ambling local" at "http://watchmoon.ambling.org:8081/artifactory/libs-snapshot-local/"
+resolvers += Resolver.mavenLocal
+
+// need to checkout this branch and install locally: https://github.com/ambling/rtree/tree/local_install
+libraryDependencies += "com.github.davidmoten" % "rtree" % "0.8-RC11-SNAPSHOT"
 
 libraryDependencies += "biz.paluch.redis" % "lettuce" % "4.3.1.Final" exclude("io.netty", "netty-common") exclude("io.netty", "netty-transport") exclude("io.netty", "netty-handler") exclude("io.netty", "netty-codec")
 

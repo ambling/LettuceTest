@@ -1,4 +1,4 @@
-package com.github.ambling.lettucetest
+package com.github.ambling.lettucetest.utils
 
 import java.nio.ByteBuffer
 
