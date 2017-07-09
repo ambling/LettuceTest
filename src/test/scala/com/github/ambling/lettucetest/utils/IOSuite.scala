@@ -30,7 +30,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     syncCommands.del(key)
 
     // use single write
-    var inputsteam = new RedisBytesOutputStream(connection, key)
+    var inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     for (byte <- data) inputsteam.write(byte)
     inputsteam.flush
     inputsteam.writed should equal(data.length)
@@ -39,7 +39,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
 
     syncCommands.del(key)
     // use all write
-    inputsteam = new RedisBytesOutputStream(connection, key)
+    inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     inputsteam.write(data)
     inputsteam.flush
     inputsteam.writed should equal(data.length)
@@ -48,7 +48,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
 
     syncCommands.del(key)
     // use offset write
-    inputsteam = new RedisBytesOutputStream(connection, key)
+    inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     inputsteam.write(data, 0, 4)
     inputsteam.flush
     inputsteam.writed should equal(4)
@@ -72,7 +72,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     data.limit(length)
     data.remaining() should equal (length)
     syncCommands.del(key)
-    var inputsteam = new RedisBytesOutputStream(connection, key)
+    var inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     var channel = inputsteam.getChannel
     channel.write(data)
     channel.close()
@@ -87,7 +87,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     data.limit(length)
     data.remaining() should equal (length)
     syncCommands.del(key)
-    inputsteam = new RedisBytesOutputStream(connection, key)
+    inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     channel = inputsteam.getChannel
     channel.write(data)
     channel.close()
@@ -101,7 +101,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     data.limit(length)
     data.remaining() should equal (length)
     syncCommands.del(key)
-    inputsteam = new RedisBytesOutputStream(connection, key)
+    inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     channel = inputsteam.getChannel
     channel.write(data)
     channel.close()
@@ -115,7 +115,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     data.limit(length)
     data.remaining() should equal (length)
     syncCommands.del(key)
-    inputsteam = new RedisBytesOutputStream(connection, key)
+    inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     channel = inputsteam.getChannel
     channel.write(data)
     channel.close()
@@ -129,7 +129,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     data.limit(length)
     data.remaining() should equal (length)
     syncCommands.del(key)
-    inputsteam = new RedisBytesOutputStream(connection, key)
+    inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     channel = inputsteam.getChannel
     channel.write(data)
     channel.close()
@@ -143,7 +143,7 @@ class IOSuite extends FunSuite with ShouldMatchers {
     data.limit(length)
     data.remaining() should equal (length)
     syncCommands.del(key)
-    inputsteam = new RedisBytesOutputStream(connection, key)
+    inputsteam = new AsyncRedisBytesOutputStream(connection, key)
     channel = inputsteam.getChannel
     channel.write(data)
     channel.close()

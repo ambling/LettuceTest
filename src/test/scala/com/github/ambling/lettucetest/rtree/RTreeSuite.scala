@@ -52,11 +52,47 @@ class RTreeSuite extends FunSuite with ShouldMatchers with BeforeAndAfter {
   }
 
   test("store data and range query") {
-    val builder = new SpatialRTreeBuilder
+    val builder = new SpatialRTreeBuilder(100)
     val profiler = new Profiler("construction")
 
-    builder.store(connection, entries1kKey, entries1k)
-    profiler.recordAndReset("store entries 1k")
+    builder.storeChannel(connection, entries1kKey, entries1k)
+    profiler.recordAndReset("channel store entries 1k")
+
+    val bufdata0 = syncCommands.get(entries1kKey).array()
+    syncCommands.del(entries1kKey)
+
+    profiler.reset()
+    builder.storeSync(connection, entries1kKey, entries1k)
+    profiler.recordAndReset("sync store entries 1k")
+
+    var bufdata1 = syncCommands.get(entries1kKey).array()
+    bufdata0.toSeq should equal (bufdata1.toSeq)
+    syncCommands.del(entries1kKey)
+
+    profiler.reset()
+    builder.storeBufferedSync(connection, entries1kKey, entries1k)
+    profiler.recordAndReset("buffered sync store entries 1k")
+
+    bufdata1 = syncCommands.get(entries1kKey).array()
+    bufdata0.toSeq should equal (bufdata1.toSeq)
+    syncCommands.del(entries1kKey)
+
+    profiler.reset()
+    builder.storeAsync(connection, entries1kKey, entries1k)
+    profiler.recordAndReset("async store entries 1k")
+
+    bufdata1 = syncCommands.get(entries1kKey).array()
+    bufdata0.toSeq should equal (bufdata1.toSeq)
+    syncCommands.del(entries1kKey)
+
+    profiler.reset()
+    builder.storeChannel(connection, entries1kKey, entries1k)
+    profiler.recordAndReset("channel store entries 1k")
+
+    bufdata1 = syncCommands.get(entries1kKey).array()
+    bufdata0.toSeq should equal (bufdata1.toSeq)
+
+    profiler.reset()
     val entries1KPos = builder.load(connection, entries1kKey)
     profiler.recordAndReset("load entries 1k")
 
@@ -83,7 +119,9 @@ class RTreeSuite extends FunSuite with ShouldMatchers with BeforeAndAfter {
     val ranges = dist.map(d => Geometries.rectangle(500 - d, 500 - d, 500 + d, 500 + d))
 
     profiler.reset()
-    var re1 = RangeQuery(connection, entries1kKey, ranges(0))
+    var re0 = RangeQuery(connection, entries1kKey, ranges(0), false)
+    profiler.recordAndReset("range query without data on Redis 0")
+    var re1 = RangeQuery(connection, entries1kKey, ranges(0), true)
     profiler.recordAndReset("range query on Redis 0")
     var re2 = RangeQuery(rtree, ranges(0))
     profiler.recordAndReset("range query on RTree 0")
@@ -94,7 +132,9 @@ class RTreeSuite extends FunSuite with ShouldMatchers with BeforeAndAfter {
     re1.toSet should equal (re3.toSet)
 
     profiler.reset()
-    re1 = RangeQuery(connection, entries1kKey, ranges(1))
+    re0 = RangeQuery(connection, entries1kKey, ranges(1), false)
+    profiler.recordAndReset("range query without data on Redis 1")
+    re1 = RangeQuery(connection, entries1kKey, ranges(1), true)
     profiler.recordAndReset("range query on Redis 1")
     re2 = RangeQuery(rtree, ranges(1))
     profiler.recordAndReset("range query on RTree 1")
@@ -105,7 +145,9 @@ class RTreeSuite extends FunSuite with ShouldMatchers with BeforeAndAfter {
     re1.toSet should equal (re3.toSet)
 
     profiler.reset()
-    re1 = RangeQuery(connection, entries1kKey, ranges(2))
+    re0 = RangeQuery(connection, entries1kKey, ranges(2), false)
+    profiler.recordAndReset("range query without data on Redis 2")
+    re1 = RangeQuery(connection, entries1kKey, ranges(2), true)
     profiler.recordAndReset("range query on Redis 2")
     re2 = RangeQuery(rtree, ranges(2))
     profiler.recordAndReset("range query on RTree 2")
@@ -116,7 +158,9 @@ class RTreeSuite extends FunSuite with ShouldMatchers with BeforeAndAfter {
     re1.toSet should equal (re3.toSet)
 
     profiler.reset()
-    re1 = RangeQuery(connection, entries1kKey, ranges(3))
+    re0 = RangeQuery(connection, entries1kKey, ranges(3), false)
+    profiler.recordAndReset("range query without data on Redis 3")
+    re1 = RangeQuery(connection, entries1kKey, ranges(3), true)
     profiler.recordAndReset("range query on Redis 3")
     re2 = RangeQuery(rtree, ranges(3))
     profiler.recordAndReset("range query on RTree 3")
@@ -127,7 +171,9 @@ class RTreeSuite extends FunSuite with ShouldMatchers with BeforeAndAfter {
     re1.toSet should equal (re3.toSet)
 
     profiler.reset()
-    re1 = RangeQuery(connection, entries1kKey, ranges(4))
+    re0 = RangeQuery(connection, entries1kKey, ranges(4), false)
+    profiler.recordAndReset("range query without data on Redis 4")
+    re1 = RangeQuery(connection, entries1kKey, ranges(4), true)
     profiler.recordAndReset("range query on Redis 4")
     re2 = RangeQuery(rtree, ranges(4))
     profiler.recordAndReset("range query on RTree 4")

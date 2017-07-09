@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * An output stream that write (append) bytes to a string value with a specific key
  */
-class RedisBytesOutputStream(
+class AsyncRedisBytesOutputStream(
     val connection: StatefulRedisConnection[String, ByteBuffer],
     val key: String)
   extends OutputStream with Closeable {
@@ -74,7 +74,7 @@ class RedisBytesOutputStream(
  *
  * The buffer is actually unnecessary since the input is already a buffer itself.
  */
-class UnbufferedWritableByteChannel(val out: RedisBytesOutputStream)
+class UnbufferedWritableByteChannel(val out: AsyncRedisBytesOutputStream)
   extends AbstractInterruptibleChannel with WritableByteChannel {
 
   private val TRANSFER_SIZE = 8192

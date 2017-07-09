@@ -7,7 +7,7 @@ import java.util
 
 import com.github.ambling.lettucetest.utils.{IndexQuerier, RedisBytesChannel}
 import com.github.davidmoten.rtree.RTree
-import com.github.davidmoten.rtree.geometry.{Point, Rectangle}
+import com.github.davidmoten.rtree.geometry.{Geometries, Point, Rectangle}
 import com.lambdaworks.redis.api.StatefulRedisConnection
 
 import scala.collection.JavaConverters._
@@ -39,7 +39,8 @@ object RangeQuery {
     }
 
     def query(queriers: Map[String, IndexQuerier],
-              channel: SeekableByteChannel)
+              channel: SeekableByteChannel,
+              fetch: Boolean)
     : Iterator[Point] = new Iterator[Point] {
 
       private val querier = queriers.getOrElse(SpatialRTree.name, null)
@@ -54,8 +55,10 @@ object RangeQuery {
         case leaf: RTreeLeaf =>
           leaf.positions.foreach { case (mbr, pos) =>
             if (mbr.intersects(range)) {
-              val elem = fromChannel(channel, pos)
-              elements.push(elem) // TODO need to check the intersection between elem and range
+              val elem =
+                if (fetch) fromChannel(channel, pos)
+                else Geometries.point(mbr.x1(), mbr.y2())
+              elements.push(elem)
             }
           }
         case nonLeaf: RTreeNonLeaf =>
@@ -89,13 +92,14 @@ object RangeQuery {
 
   def apply(connection: StatefulRedisConnection[String, ByteBuffer],
             blockID: String,
-            range: Rectangle): Array[Point] = {
+            range: Rectangle,
+            fetch: Boolean): Array[Point] = {
     val localFilter = new LFilter(range)
 
     val queriers = Map(
       (SpatialRTree.name, new IndexQuerier(connection, blockID, SpatialRTree.name)))
     val channel = new RedisBytesChannel(connection, blockID, false)
-    localFilter.query(queriers, channel).toArray
+    localFilter.query(queriers, channel, fetch).toArray
   }
 
   def apply(elems: Iterator[Point],

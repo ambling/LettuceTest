@@ -1,10 +1,10 @@
 package com.github.ambling.lettucetest.rtree
 
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
+import java.io._
 import java.nio.ByteBuffer
 import java.nio.channels.Channels
 
-import com.github.ambling.lettucetest.utils.{IndexQuerier, IndexWriter, RedisBytesChannel}
+import com.github.ambling.lettucetest.utils._
 import com.github.davidmoten.rtree._
 import com.github.davidmoten.rtree.geometry.{Geometries, Point, Rectangle}
 import com.lambdaworks.redis.api.StatefulRedisConnection
@@ -17,11 +17,39 @@ class SpatialRTreeBuilder(maxChildren: Int = 10) {
   def name: String = SpatialRTree.name
   private var nodeID = 1 // 0 for root
 
-  def store(connection: StatefulRedisConnection[String, ByteBuffer],
-            blockID: String,
-            data: Array[Point]): Unit = {
+  def storeSync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String,
+      data: Array[Point]): Unit = {
+    val stream = new SyncRedisBytesOutputStream(connection, blockID)
+    store(stream, data)
+  }
+
+  def storeBufferedSync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String,
+      data: Array[Point]): Unit = {
+    val stream = new BufferedOutputStream(new SyncRedisBytesOutputStream(connection, blockID))
+    store(stream, data)
+  }
+
+  def storeAsync(connection: StatefulRedisConnection[String, ByteBuffer],
+                 blockID: String,
+                 data: Array[Point]): Unit = {
+    val stream = new AsyncRedisBytesOutputStream(connection, blockID)
+    store(stream, data)
+  }
+
+  def storeChannel(
+    connection: StatefulRedisConnection[String, ByteBuffer],
+    blockID: String,
+    data: Array[Point]): Unit = {
     val channel = new RedisBytesChannel(connection, blockID, true)
     val stream = Channels.newOutputStream(channel)
+    store(stream, data)
+  }
+
+  def store(stream: OutputStream, data: Array[Point]): Unit = {
     val output = new DataOutputStream(stream)
     data.foreach { point =>
       val buf = Point2Buffer.toBuffer(point)
