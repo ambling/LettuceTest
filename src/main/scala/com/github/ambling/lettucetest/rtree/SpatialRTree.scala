@@ -17,6 +17,52 @@ class SpatialRTreeBuilder(maxChildren: Int = 10) {
   def name: String = SpatialRTree.name
   private var nodeID = 1 // 0 for root
 
+  def storeHashSync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String,
+      data: Array[Point]): Unit = {
+    val syncCommand = connection.sync()
+    data.zipWithIndex.foreach { case (p, i) =>
+      val buf = Point2Buffer.toBuffer(p)
+      syncCommand.hset(blockID, i.toString, buf)
+    }
+  }
+
+  def storeHashAsync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String,
+      data: Array[Point]): Unit = {
+    val syncCommand = connection.sync()
+    val map = data.zipWithIndex.map { case (p, i) =>
+      val buf = Point2Buffer.toBuffer(p)
+      (i.toString, buf)
+    }.toMap.asJava
+
+    syncCommand.hmset(blockID, map)
+  }
+
+  def loadHashSync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String): Array[(Long, Point)] = {
+
+    val syncCommand = connection.sync()
+    val ids = syncCommand.hlen(blockID)
+    (0L until ids).toArray.map { id =>
+      val buf = syncCommand.hget(blockID, id.toString)
+      (id, Point2Buffer.fromBuffer(buf))
+    }
+  }
+
+  def loadHashAsync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String): Array[(Long, Point)] = {
+
+    val syncCommand = connection.sync()
+    syncCommand.hgetall(blockID).asScala
+      .map(t => (t._1.toLong, Point2Buffer.fromBuffer(t._2)))
+      .toArray
+  }
+
   def storeSync(
       connection: StatefulRedisConnection[String, ByteBuffer],
       blockID: String,
@@ -59,11 +105,7 @@ class SpatialRTreeBuilder(maxChildren: Int = 10) {
     output.flush()
   }
 
-  def load(connection: StatefulRedisConnection[String, ByteBuffer],
-           blockID: String): Array[(Long, Point)] = {
-
-    val channel = new RedisBytesChannel(connection, blockID, false)
-    val stream = Channels.newInputStream(channel)
+  def loadStream(stream: InputStream): Array[(Long, Point)] = {
     val input = new DataInputStream(stream)
     new Iterator[(Long, Point)] {
       var finished = false
@@ -82,6 +124,40 @@ class SpatialRTreeBuilder(maxChildren: Int = 10) {
         (p, point)
       }
     }.toArray
+  }
+
+  def loadChannel(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String): Array[(Long, Point)] = {
+
+    val channel = new RedisBytesChannel(connection, blockID, false)
+    val stream = Channels.newInputStream(channel)
+    loadStream(stream)
+  }
+
+  def loadSync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String): Array[(Long, Point)] = {
+    val stream = new SyncRedisBytesInputStream(connection, blockID)
+    loadStream(stream)
+  }
+
+  def loadSyncBuffered(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String): Array[(Long, Point)] = {
+
+    val stream = new BufferedInputStream(new SyncRedisBytesInputStream(connection, blockID))
+    loadStream(stream)
+  }
+
+  def loadAsync(
+      connection: StatefulRedisConnection[String, ByteBuffer],
+      blockID: String): Array[(Long, Point)] = {
+
+    // just load all data
+    val data = connection.sync().get(blockID)
+    val stream = new ByteArrayInputStream(data.array())
+    loadStream(stream)
   }
 
   def buildRTree(data: Array[(Long, Point)]): RTree[Long, Point] = {

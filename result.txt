@@ -1,0 +1,75 @@
+[entries 1k] channel store: 572ms
+[entries 1k] sync store: 407ms
+[entries 1k] buffered sync store: 1ms
+[entries 1k] async store: 100ms
+[entries 1k] channel store: 469ms
+[entries 1k] channel load: 328ms
+[entries 1k] sync buffered load: 1ms
+[entries 1k] sync load: 230ms
+[entries 1k] async load: 1ms
+[entries 1k] channel load: 290ms
+[entries 1k] hash sync store: 55ms
+[entries 1k] hash async store: 22ms
+[entries 1k] hash sync store: 48ms
+[entries 1k] hash async load: 23ms
+[entries 1k] hash sync load: 75ms
+[entries 1k] hash async load: 5ms
+
+[entries 1k] buffered sync store: 1ms
+[entries 1k] buffered sync store hash: 6ms
+[entries 1k] load: 1ms
+[entries 1k] load hash: 3ms
+[entries 1k] construct in-mem rtree: 17ms
+[entries 1k] construct in-mem rtree hash: 2ms
+[entries 1k] store rtree: 7ms
+[entries 1k] store rtree hash: 3ms
+[entries 1k] range query without data on Redis 0: 3ms
+[entries 1k] range query on Redis with channel 0: 0ms
+[entries 1k] range query on Redis with sync input 0: 1ms
+[entries 1k] range query on Redis with buffered sync input 0: 0ms
+[entries 1k] range query on RTree 0: 19ms
+[entries 1k] range query on entries 0: 0ms
+[entries 1k] range query without data on Redis 0: 0ms
+[entries 1k] range query on Redis with hash 0: 0ms
+[entries 1k] range query on Redis with aync hash 0: 1ms
+[entries 1k] range query on Redis with hash 0: 0ms
+[entries 1k] range query without data on Redis 1: 0ms
+[entries 1k] range query on Redis with channel 1: 0ms
+[entries 1k] range query on Redis with sync input 1: 0ms
+[entries 1k] range query on Redis with buffered sync input 1: 0ms
+[entries 1k] range query on RTree 1: 0ms
+[entries 1k] range query on entries 1: 0ms
+[entries 1k] range query without data on Redis 1: 0ms
+[entries 1k] range query on Redis with hash 1: 0ms
+[entries 1k] range query on Redis with aync hash 1: 0ms
+[entries 1k] range query on Redis with hash 1: 0ms
+[entries 1k] range query without data on Redis 2: 0ms
+[entries 1k] range query on Redis with channel 2: 7ms
+[entries 1k] range query on Redis with sync input 2: 8ms
+[entries 1k] range query on Redis with buffered sync input 2: 1ms
+[entries 1k] range query on RTree 2: 0ms
+[entries 1k] range query on entries 2: 0ms
+[entries 1k] range query without data on Redis 2: 1ms
+[entries 1k] range query on Redis with hash 2: 1ms
+[entries 1k] range query on Redis with aync hash 2: 2ms
+[entries 1k] range query on Redis with hash 2: 2ms
+[entries 1k] range query without data on Redis 3: 0ms
+[entries 1k] range query on Redis with channel 3: 20ms
+[entries 1k] range query on Redis with sync input 3: 16ms
+[entries 1k] range query on Redis with buffered sync input 3: 1ms
+[entries 1k] range query on RTree 3: 0ms
+[entries 1k] range query on entries 3: 0ms
+[entries 1k] range query without data on Redis 3: 0ms
+[entries 1k] range query on Redis with hash 3: 4ms
+[entries 1k] range query on Redis with aync hash 3: 1ms
+[entries 1k] range query on Redis with hash 3: 3ms
+[entries 1k] range query without data on Redis 4: 2ms
+[entries 1k] range query on Redis with channel 4: 275ms
+[entries 1k] range query on Redis with sync input 4: 228ms
+[entries 1k] range query on Redis with buffered sync input 4: 2ms
+[entries 1k] range query on RTree 4: 4ms
+[entries 1k] range query on entries 4: 0ms
+[entries 1k] range query without data on Redis 4: 2ms
+[entries 1k] range query on Redis with hash 4: 47ms
+[entries 1k] range query on Redis with aync hash 4: 3ms
+[entries 1k] range query on Redis with hash 4: 47ms

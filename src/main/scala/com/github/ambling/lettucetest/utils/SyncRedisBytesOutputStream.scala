@@ -13,9 +13,8 @@ class SyncRedisBytesOutputStream(
     val connection: StatefulRedisConnection[String, ByteBuffer],
     val key: String) extends OutputStream with Closeable {
 
-  var writed: Long = 0
-  var closed: Boolean = false
-  val syncCommand: RedisCommands[String, ByteBuffer] = connection.sync
+  private var closed: Boolean = false
+  private val syncCommand: RedisCommands[String, ByteBuffer] = connection.sync
 
   override def write(b: Int): Unit = {
     val buf = ByteBuffer.allocate(4)
@@ -35,7 +34,7 @@ class SyncRedisBytesOutputStream(
   }
 
   def write(buf: ByteBuffer): Unit = {
-    val future = syncCommand.append(key, buf)
+    syncCommand.append(key, buf)
   }
 
   override def flush(): Unit = {
